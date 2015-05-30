@@ -3469,9 +3469,6 @@ var dart = [
   }, "call$0", "main$closure", 0, 0, 1],
   AccelerometerData: {
     "^": "Object;timestamps,xs,ys,zs",
-    toJson$0: function() {
-      return C.JsonCodec_null_null.encode$1(P.LinkedHashMap_LinkedHashMap$_literal(["timestamps", this.timestamps, "xs", this.xs, "ys", this.ys, "zs", this.zs], null, null));
-    },
     AccelerometerData$blank$0: function() {
       this.timestamps = H.setRuntimeTypeInfo([], [P.$int]);
       this.xs = H.setRuntimeTypeInfo([], [P.$double]);
@@ -3491,7 +3488,7 @@ var dart = [
     "^": "Object;frequency,amplitude",
     findTimestampedHeaps$2: function(timestamps, axisData) {
       var maxHeap, len, res, i, t1;
-      maxHeap = (axisData && C.JSArray_methods).fold$2(axisData, 0, new S.AxisDataParams_findTimestampedHeaps_closure());
+      maxHeap = C.JSArray_methods.fold$2(axisData, 0, new S.AxisDataParams_findTimestampedHeaps_closure());
       len = P.min(timestamps.length, axisData.length);
       res = [];
       for (i = 0; i < len; ++i) {
@@ -3523,7 +3520,7 @@ var dart = [
       return 1000 / (timestampDiffsSum / timestampDiffsCnt);
     },
     findHeapAmplitude$1: function(axisData) {
-      var minHeap = (axisData && C.JSArray_methods).fold$2(axisData, 0, new S.AxisDataParams_findHeapAmplitude_closure());
+      var minHeap = C.JSArray_methods.fold$2(axisData, 0, new S.AxisDataParams_findHeapAmplitude_closure());
       return J.$sub$n(C.JSArray_methods.fold$2(axisData, 0, new S.AxisDataParams_findHeapAmplitude_closure0()), minHeap);
     },
     AxisDataParams$fromAxisData$2: function(timestamps, axisData) {
@@ -3563,15 +3560,6 @@ var dart = [
     "^": "Object;xParams,yParams,zParams",
     toJson$0: function() {
       return C.JsonCodec_null_null.encode$1(this);
-    },
-    toObject$0: function() {
-      var t1, t2, t3;
-      t1 = this.xParams;
-      t1 = P.LinkedHashMap_LinkedHashMap$_literal(["frequency", t1.frequency, "amplitude", t1.amplitude], null, null);
-      t2 = this.yParams;
-      t2 = P.LinkedHashMap_LinkedHashMap$_literal(["frequency", t2.frequency, "amplitude", t2.amplitude], null, null);
-      t3 = this.zParams;
-      return P.LinkedHashMap_LinkedHashMap$_literal(["xParams", t1, "yParams", t2, "zParams", P.LinkedHashMap_LinkedHashMap$_literal(["frequency", t3.frequency, "amplitude", t3.amplitude], null, null)], null, null);
     },
     AxesData$fromAccelerometerData$1: function(data) {
       this.xParams = S.AxisDataParams$fromAxisData(data.timestamps, data.xs);
@@ -3768,19 +3756,26 @@ var dart = [
       var request, t1;
       this.label = label;
       request = new XMLHttpRequest();
+      C.HttpRequest_methods.open$3$async(request, "post", "http://192.168.2.237/track_accel_data.php", true);
       t1 = H.setRuntimeTypeInfo(new W._EventStream(request, "readystatechange", false), [null]);
       H.setRuntimeTypeInfo(new W._EventStreamSubscription(0, t1._target, t1._eventType, W._wrapZone(new S.MotionTracker_flush_closure(request)), t1._useCapture), [H.getTypeArgumentByIndex(t1, 0)])._tryResume$0();
-      C.HttpRequest_methods.open$3$async(request, "POST", "http://192.168.2.237/track_accel_data.php", false);
       request.send(this.toJson$0());
-      this.accelData = new S.AccelerometerData(null, null, null, null);
-      this.axesData = [];
+      this.accelData = S.AccelerometerData$blank();
+      this.axesData = null;
       this.label = "unknown";
     },
     toJson$0: function() {
-      var t1, t2, $self;
+      var t1, t2, $self, t3, t4;
       t1 = this.label;
       t2 = this.accelData;
-      $self = P.LinkedHashMap_LinkedHashMap$_literal(["label", t1, "accelData", P.LinkedHashMap_LinkedHashMap$_literal(["timestamps", t2.timestamps, "xs", t2.xs, "ys", t2.ys, "zs", t2.zs], null, null), "axesData", H.setRuntimeTypeInfo(new H.MappedListIterable(this.axesData, new S.MotionTracker_toJson_closure()), [null, null]).toList$0(0)], null, null);
+      $self = P.LinkedHashMap_LinkedHashMap$_literal(["timestamps", t2.timestamps, "xs", t2.xs, "ys", t2.ys, "zs", t2.zs], null, null);
+      t2 = this.axesData;
+      t3 = t2.xParams;
+      t3 = P.LinkedHashMap_LinkedHashMap$_literal(["frequency", t3.frequency, "amplitude", t3.amplitude], null, null);
+      t4 = t2.yParams;
+      t4 = P.LinkedHashMap_LinkedHashMap$_literal(["frequency", t4.frequency, "amplitude", t4.amplitude], null, null);
+      t2 = t2.zParams;
+      $self = P.LinkedHashMap_LinkedHashMap$_literal(["label", t1, "accelData", $self, "axesData", P.LinkedHashMap_LinkedHashMap$_literal(["xParams", t3, "yParams", t4, "zParams", P.LinkedHashMap_LinkedHashMap$_literal(["frequency", t2.frequency, "amplitude", t2.amplitude], null, null)], null, null)], null, null);
       window;
       if (typeof console != "undefined")
         console.log($self);
@@ -3791,8 +3786,8 @@ var dart = [
       return C.JsonCodec_null_null.encode$1($self);
     },
     MotionTracker$0: function() {
-      this.accelData = new S.AccelerometerData(null, null, null, null);
-      this.axesData = [];
+      this.accelData = S.AccelerometerData$blank();
+      this.axesData = null;
       this.label = "unknown";
     },
     static: {MotionTracker$: function() {
@@ -3804,25 +3799,13 @@ var dart = [
   MotionTracker_flush_closure: {
     "^": "Closure:2;_captured_request_0",
     call$1: function(_) {
-      var t1, t2;
-      t1 = this._captured_request_0;
-      if (t1.readyState === 4) {
-        t2 = t1.status;
-        t2 = t2 === 200 || t2 === 0;
-      } else
-        t2 = false;
-      if (t2) {
+      var t1 = this._captured_request_0;
+      if (t1.readyState === 4 && t1.status === 200) {
         window;
         t1 = t1.responseText;
         if (typeof console != "undefined")
           console.log(t1);
       }
-    }
-  },
-  MotionTracker_toJson_closure: {
-    "^": "Closure:2;",
-    call$1: function(e) {
-      return e.toObject$0();
     }
   },
   MotionListener: {
@@ -3831,7 +3814,7 @@ var dart = [
       this.tracker.flush$1(H.interceptedTypeCast(J.get$target$x(e), "$isButtonElement").getAttribute("data-activity"));
     }, "call$1", "get$flush", 2, 0, 7],
     handle$1: [function(e) {
-      var ts, x, y, z, params, pattern, e0, trace, t1, t2, t3, newParams, exception;
+      var ts, x, y, z, params, pattern, e0, trace, t1, t2, exception;
       ts = C.JSInt_methods._tdivFast$1(P.Duration$(0, 0, 0, Date.now() - this.firstTimestamp.millisecondsSinceEpoch, 0, 0)._duration, 1000);
       x = J.get$accelerationIncludingGravity$x(e).x;
       t1 = e.accelerationIncludingGravity;
@@ -3847,16 +3830,11 @@ var dart = [
         if (J.$gt$n(ts, this.DATA_LIFE_TIME)) {
           t1 = this.tracker;
           t2 = this.accelData;
-          t3 = t1.accelData.timestamps;
-          (t3 && C.JSArray_methods).addAll$1(t3, t2.timestamps);
-          t3 = t1.accelData.xs;
-          (t3 && C.JSArray_methods).addAll$1(t3, t2.xs);
-          t3 = t1.accelData.ys;
-          (t3 && C.JSArray_methods).addAll$1(t3, t2.ys);
-          t3 = t1.accelData.zs;
-          (t3 && C.JSArray_methods).addAll$1(t3, t2.zs);
-          newParams = S.AxesData$fromAccelerometerData(t2);
-          t1.axesData.push(newParams);
+          C.JSArray_methods.addAll$1(t1.accelData.timestamps, t2.timestamps);
+          C.JSArray_methods.addAll$1(t1.accelData.xs, t2.xs);
+          C.JSArray_methods.addAll$1(t1.accelData.ys, t2.ys);
+          C.JSArray_methods.addAll$1(t1.accelData.zs, t2.zs);
+          t1.axesData = S.AxesData$fromAccelerometerData(t1.accelData);
           this.accelData = S.AccelerometerData$blank();
           this.firstTimestamp = new P.DateTime(Date.now(), false);
         }
@@ -3909,15 +3887,12 @@ var dart = [
       return H.setRuntimeTypeInfo(new H.MappedListIterable(this, f), [null, null]);
     },
     toList$1$growable: function(_, growable) {
-      var result, t1, i;
+      var result, i, t1;
       if (growable) {
         result = H.setRuntimeTypeInfo([], [H.getRuntimeTypeArgument(this, "ListIterable", 0)]);
         C.JSArray_methods.set$length(result, this.get$length(this));
-      } else {
-        t1 = Array(this.get$length(this));
-        t1.fixed$length = Array;
-        result = H.setRuntimeTypeInfo(t1, [H.getRuntimeTypeArgument(this, "ListIterable", 0)]);
-      }
+      } else
+        result = H.setRuntimeTypeInfo(Array(this.get$length(this)), [H.getRuntimeTypeArgument(this, "ListIterable", 0)]);
       for (i = 0; i < this.get$length(this); ++i) {
         t1 = this.elementAt$1(0, i);
         if (i >= result.length)
@@ -3995,12 +3970,12 @@ var dart = [
     }
   },
   MappedListIterable: {
-    "^": "ListIterable;_source,_f",
+    "^": "ListIterable;__internal$_source,_f",
     get$length: function(_) {
-      return J.get$length$asx(this._source);
+      return J.get$length$asx(this.__internal$_source);
     },
     elementAt$1: function(_, index) {
-      return this._f$1(J.elementAt$1$ax(this._source, index));
+      return this._f$1(J.elementAt$1$ax(this.__internal$_source, index));
     },
     _f$1: function(arg0) {
       return this._f.call$1(arg0);
@@ -5628,7 +5603,7 @@ var dart = [
       var t1, t2;
       t1 = this.get$_handleData();
       t2 = this.get$_handleError();
-      this._subscription = this._stream._async$_source.listen$3$onDone$onError(t1, this.get$_handleDone(), t2);
+      this._subscription = this._stream._source.listen$3$onDone$onError(t1, this.get$_handleDone(), t2);
     },
     $as_BufferingStreamSubscription: function($S, $T) {
       return [$T];
@@ -5642,7 +5617,7 @@ var dart = [
       }}
   },
   _WhereStream: {
-    "^": "_ForwardingStream;_test,_async$_source",
+    "^": "_ForwardingStream;_test,_source",
     _handleData$2: function(inputEvent, sink) {
       var satisfies, e, s, exception, t1;
       satisfies = null;
@@ -5667,7 +5642,7 @@ var dart = [
     $asStream: null
   },
   _MapStream: {
-    "^": "_ForwardingStream;_transform,_async$_source",
+    "^": "_ForwardingStream;_transform,_source",
     _handleData$2: function(inputEvent, sink) {
       var outputEvent, e, s, exception, t1;
       outputEvent = null;

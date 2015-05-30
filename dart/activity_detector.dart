@@ -17,15 +17,7 @@ class AccelerometerData {
     this.zs = new List<double>();
   }
 
-  // AccelerometerData.fromJson(String s) {
-  //   Map j = JSON.decode(s);
-  //   this.timestamps = j['timestamps'];
-  //   this.xs = j['xs'];
-  //   this.ys = j['ys'];
-  //   this.zs = j['zs'];
-  // }
-
-  String toJson() {
+  Map toObject() {
     var self = {
       "timestamps": this.timestamps,
       "xs": this.xs,
@@ -33,7 +25,7 @@ class AccelerometerData {
       "zs": this.zs
     };
 
-    return JSON.encode(self);
+    return self;
   }
 }
 
@@ -96,6 +88,13 @@ class AxisDataParams {
 
     return maxHeap - minHeap;
   }
+
+  Map toObject() {
+    return {
+      "frequency": this.frequency,
+      "amplitude": this.amplitude
+    };
+  }
 }
 
 class AxesData {
@@ -115,18 +114,9 @@ class AxesData {
 
   Map toObject() {
     return {
-      "xParams": {
-        "frequency": this.xParams.frequency,
-        "amplitude": this.xParams.amplitude
-      },
-      "yParams": {
-        "frequency": this.yParams.frequency,
-        "amplitude": this.yParams.amplitude
-      },
-      "zParams": {
-        "frequency": this.zParams.frequency,
-        "amplitude": this.zParams.amplitude
-      }
+      "xParams": this.xParams.toObject(),
+      "yParams": this.yParams.toObject(),
+      "zParams": this.zParams.toObject()
     };
   }
 }
@@ -259,12 +249,12 @@ class ActivityMatcher {
 
 class MotionTracker {
   AccelerometerData accelData;
-  List<AxesData> axesData;
+  AxesData axesData;
   String label;
 
   MotionTracker() {
-    this.accelData = new AccelerometerData();
-    this.axesData = [];
+    this.accelData = new AccelerometerData.blank();
+    this.axesData = null;
     this.label = 'unknown';
   }
 
@@ -274,44 +264,32 @@ class MotionTracker {
     this.accelData.ys.addAll(newPack.ys);
     this.accelData.zs.addAll(newPack.zs);
 
-    AxesData newParams = new AxesData.fromAccelerometerData(newPack);
-    this.axesData.add(newParams);
+    this.axesData = new AxesData.fromAccelerometerData(this.accelData);
   }
 
   void flush(String label) {
     this.label = label;
-    HttpRequest request = new HttpRequest(); // create a new XHR
+    HttpRequest request = new HttpRequest();
 
-    // add an event handler that is called when the request finishes
+    var url = "http://192.168.2.237/track_accel_data.php";
+    request.open("post", url, async: true);
     request.onReadyStateChange.listen((_) {
-      if (request.readyState == HttpRequest.DONE &&
-          (request.status == 200 || request.status == 0)) {
-        // data saved OK.
-        window.console.log(request.responseText); // output the response from the server
+      if (request.readyState == HttpRequest.DONE && request.status == 200) {
+        window.console.log(request.responseText);
       }
     });
+    request.send(this.toJson());
 
-    // POST the data to the server
-    var url = "http://192.168.2.237/track_accel_data.php";
-    request.open("POST", url, async: false);
-
-    request.send(this.toJson()); // perform the async POST
-
-    this.accelData = new AccelerometerData();
-    this.axesData = [];
+    this.accelData = new AccelerometerData.blank();
+    this.axesData = null;
     this.label = 'unknown';
   }
 
   String toJson() {
     var self = {
       "label": this.label,
-      "accelData": {
-        "timestamps": this.accelData.timestamps,
-        "xs": this.accelData.xs,
-        "ys": this.accelData.ys,
-        "zs": this.accelData.zs
-      }, //this.accelData.toJson(),
-      "axesData": this.axesData.map((e) => e.toObject()).toList()
+      "accelData": this.accelData.toObject(),
+      "axesData": this.axesData.toObject()
     };
 
     window.console.log(self);
