@@ -1,6 +1,6 @@
 import 'dart:html';
 import 'dart:math';
-//import 'dart:convert';
+import 'dart:convert';
 
 class AccelerometerData {
   List<int> timestamps;
@@ -17,17 +17,24 @@ class AccelerometerData {
     this.zs = new List<double>();
   }
 
-  /*AccelerometerData.fromJson(String s) {
-    Map j = JSON.decode(s);
-    this.timestamps = j['timestamps'];
-    this.xs = j['xs'];
-    this.ys = j['ys'];
-    this.zs = j['zs'];
-  }
+  // AccelerometerData.fromJson(String s) {
+  //   Map j = JSON.decode(s);
+  //   this.timestamps = j['timestamps'];
+  //   this.xs = j['xs'];
+  //   this.ys = j['ys'];
+  //   this.zs = j['zs'];
+  // }
 
   String toJson() {
-    return JSON.encode(this);
-  }*/
+    var self = {
+      "timestamps": this.timestamps,
+      "xs": this.xs,
+      "ys": this.ys,
+      "zs": this.zs
+    };
+
+    return JSON.encode(self);
+  }
 }
 
 class TimestampedAxisData {
@@ -100,6 +107,27 @@ class AxesData {
     this.xParams = new AxisDataParams.fromAxisData(data.timestamps, data.xs);
     this.yParams = new AxisDataParams.fromAxisData(data.timestamps, data.ys);
     this.zParams = new AxisDataParams.fromAxisData(data.timestamps, data.zs);
+  }
+
+  String toJson() {
+    return JSON.encode(this);
+  }
+
+  Map toObject() {
+    return {
+      "xParams": {
+        "frequency": this.xParams.frequency,
+        "amplitude": this.xParams.amplitude
+      },
+      "yParams": {
+        "frequency": this.yParams.frequency,
+        "amplitude": this.yParams.amplitude
+      },
+      "zParams": {
+        "frequency": this.zParams.frequency,
+        "amplitude": this.zParams.amplitude
+      }
+    };
   }
 }
 
@@ -229,13 +257,78 @@ class ActivityMatcher {
   }
 }
 
+class MotionTracker {
+  AccelerometerData accelData;
+  List<AxesData> axesData;
+  String label;
+
+  MotionTracker() {
+    this.accelData = new AccelerometerData();
+    this.axesData = [];
+    this.label = 'unknown';
+  }
+
+  void track(AccelerometerData newPack) {
+    this.accelData.timestamps.addAll(newPack.timestamps);
+    this.accelData.xs.addAll(newPack.xs);
+    this.accelData.ys.addAll(newPack.ys);
+    this.accelData.zs.addAll(newPack.zs);
+
+    AxesData newParams = new AxesData.fromAccelerometerData(newPack);
+    this.axesData.add(newParams);
+  }
+
+  void flush(String label) {
+    this.label = label;
+    HttpRequest request = new HttpRequest(); // create a new XHR
+
+    // add an event handler that is called when the request finishes
+    request.onReadyStateChange.listen((_) {
+      if (request.readyState == HttpRequest.DONE &&
+          (request.status == 200 || request.status == 0)) {
+        // data saved OK.
+        window.console.log(request.responseText); // output the response from the server
+      }
+    });
+
+    // POST the data to the server
+    var url = "http://192.168.2.237/track_accel_data.php";
+    request.open("POST", url, async: false);
+
+    request.send(this.toJson()); // perform the async POST
+
+    this.accelData = new AccelerometerData();
+    this.axesData = [];
+    this.label = 'unknown';
+  }
+
+  String toJson() {
+    var self = {
+      "label": this.label,
+      "accelData": {
+        "timestamps": this.accelData.timestamps,
+        "xs": this.accelData.xs,
+        "ys": this.accelData.ys,
+        "zs": this.accelData.zs
+      }, //this.accelData.toJson(),
+      "axesData": this.axesData.map((e) => e.toObject()).toList()
+    };
+
+    window.console.log(self);
+    window.console.log(JSON.encode(self));
+
+    return JSON.encode(self);
+  }
+}
+
 class MotionListener {
   HtmlElement activityNamePanel;
   HtmlElement infoPanel;
 
   AccelerometerData accelData;
   DateTime firstTimestamp;
-  // String previousActivityName;
+
+  MotionTracker tracker;
 
   // store only last 5 seconds of data
   final int DATA_LIFE_TIME = 5 * 1000;
@@ -243,7 +336,11 @@ class MotionListener {
   MotionListener(this.activityNamePanel, this.infoPanel) {
     this.accelData = new AccelerometerData.blank();
     this.firstTimestamp = new DateTime.now();
-    // this.previousActivityName = "unknown";
+    this.tracker = new MotionTracker();
+  }
+
+  void flush(Event e) {
+    this.tracker.flush((e.target as ButtonElement).getAttribute('data-activity'));
   }
 
   void handle(DeviceMotionEvent e) {
@@ -264,21 +361,15 @@ class MotionListener {
       // ActivityPattern pattern = ActivityMatcher.detect(this.accelData);
 
       if (ts > DATA_LIFE_TIME) {
+        this.tracker.track(this.accelData);
+
         this.accelData = new AccelerometerData.blank();
         this.firstTimestamp = new DateTime.now();
       }
 
-      /*if (pattern.name != this.previousActivityName) {
-        this.accelData = new AccelerometerData.blank();
-        this.firstTimestamp = new DateTime.now();
-        this.previousActivityName = pattern.name;
-        // window.alert("new activity: " + pattern.name);
-      }*/
-
       this.activityNamePanel.innerHtml = pattern.name;
 
       if (this.infoPanel != null) {
-        // AxesData params = new AxesData.fromAccelerometerData(this.accelData);
         var xfreq = params.xParams.frequency, yfreq = params.yParams.frequency, zfreq = params.zParams.frequency;
         var xampl = params.xParams.amplitude, yampl = params.yParams.amplitude, zampl = params.zParams.amplitude;
 
@@ -297,10 +388,15 @@ class MotionListener {
 void main() {
   if (true) {
     HtmlElement activityNamePanel = querySelector('#activity_name');
-    HtmlElement infoPanel = querySelector('#activity_params');
 
-    MotionListener motionListener = new MotionListener(activityNamePanel, infoPanel);
+    MotionListener motionListener = new MotionListener(activityNamePanel, null);
     window.onDeviceMotion.listen(motionListener.handle);
+
+    ElementList<ButtonElement> sendButtons = querySelectorAll('.btn.send[data-activity]');
+
+    for (ButtonElement e in sendButtons) {
+      e.onClick.listen(motionListener.flush);
+    }
   } else {
     print(ActivityMatcher.activityPatterns.firstWhere((ActivityPattern pattern) => pattern.matches(new AxesData(new AxisDataParams(9.5, 1.3), new AxisDataParams(9.5, 0.3), new AxisDataParams(9.5, 9.8)))).name);
   }

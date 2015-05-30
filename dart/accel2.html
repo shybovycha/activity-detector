@@ -3,11 +3,37 @@
 <head>
 	<meta charset="UTF-8">
 	<title>AccelTest</title>
+    <style>
+        h1 {
+            font-size: 36pt;
+        }
+
+        .btn.send {
+            min-width: 200px;
+            min-height: 200px;
+            background-color: #55eedd;
+            text-align: center;
+            font-size: 24pt;
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body>
 	<h1 id="activity_name" style="font-size: 82pt;">INIT</h1>
 	<br>
 	<h1 id="activity_params" style="font-size: 24pt;">PARAMS</h1>
+
+    <div>
+        <button class="btn send" data-activity="sitting">Sitting</button>
+        <button class="btn send" data-activity="staying">Staying</button>
+    </div>
+    <div>
+        <button class="btn send" data-activity="walking">Walking</button>
+        <button class="btn send" data-activity="running">Running</button>
+    </div>
+    <div>
+        <button class="btn send" data-activity="jumping">Jumping</button>
+    </div>
 
 	<script type="text/javascript" src="activity_detector.js"></script>
 </body>
