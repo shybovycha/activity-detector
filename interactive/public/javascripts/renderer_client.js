@@ -63,7 +63,7 @@ function fetchAndAdd() {
         }
     });
 
-    $.getJSON('/graph_data/filtered', function(data) {
+    $.getJSON('/graph_data/filtered', function (data) {
         var points = data;
 
         for (var axis of [ 'x', 'y', 'z' ]) {
@@ -72,35 +72,20 @@ function fetchAndAdd() {
             if (!accel_data_chart)
                 return;
 
-            // var centerVal = points[points.length / 2].t;
-
             accel_data_chart.series[0].setData(points[axis]);
+        }
+    });
 
-            /*accel_data_chart.xAxis[0].removePlotLine('zero-period-line');
+    $.getJSON('/graph_data/transformed', function (data) {
+        var peaks = data;
 
-            accel_data_chart.xAxis[0].addPlotLine({
-                color: 'red',
-                dashStyle: 'longdashdot',
-                width: 2,
-                value: centerVal,
-                id: 'zero-period-line',
-                label: {
-                    text: 'T=0',
-                    align: 'left'
-                }
-            });
+        for (var axis of [ 'x', 'y', 'z' ]) {
+            var accel_data_chart = $('#discrete_fourier_' + axis + '_chart').highcharts();
 
-            accel_data_chart.xAxis[0].removePlotBand('period-band');
+            if (!accel_data_chart)
+                return;
 
-            accel_data_chart.xAxis[0].addPlotBand({
-                color: 'yellow',
-                from: centerVal,
-                to: centerVal + period[axis],
-                id: 'period-band',
-                label: {
-                    text: 'Period'
-                }
-            });*/
+            accel_data_chart.series[0].setData(peaks[axis]);
         }
     });
 }
@@ -176,6 +161,7 @@ function initCharts() {
             ]
         });
 
+        // filtration
         $('#filtered_' + axis + '_chart').highcharts('StockChart', {
             rangeSelector: {
                 selected: 1,
@@ -183,7 +169,7 @@ function initCharts() {
             },
 
             title: {
-                text: 'Filtered acceleration (' + axis + ')'
+                text: 'Filtered (' + axis + ')'
             },
 
             exporting: {
@@ -201,6 +187,33 @@ function initCharts() {
                 }
             ]
         });
+
+        // discrete fourier transformation
+        $('#discrete_fourier_' + axis + '_chart').highcharts('StockChart', {
+            rangeSelector: {
+                selected: 1,
+                inputEnabled : false
+            },
+
+            title: {
+                text: 'Peak frequencies (' + axis + ')'
+            },
+
+            exporting: {
+                enabled: false
+            },
+
+            series: [
+                {
+                    name: axis + ' data, transformed',
+                    data: [],
+                    type: 'column',
+                    tooltip: {
+                        valueDecimals: 2
+                    }
+                }
+            ]
+        });
     }
 }
 
@@ -210,18 +223,6 @@ $(function () {
             useUTC : false
         }
     });
-
-    var blankData = function () {
-        var data = [],
-            time = new Date().getTime(),
-            timelineWidth = 1000;
-
-        for (var i = -timelineWidth; i <= 0; i++) {
-            data.push([ i * 100, 0 ]);
-        }
-
-        return data;
-    };
 
     initCharts();
     fetchAndAdd();

@@ -5,7 +5,23 @@ block head
     script(type='text/javascript', src='http://192.168.2.237:8080/socket.io/socket.io.js')
     script(type='text/javascript', src='accelerator_client.js')
 
+    link(rel='stylesheet', href='bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='bootstrap/dist/css/bootstrap-theme.min.css')
+
 block content
-    h1= title
-    p#status Waiting
-    button#reset Reset
+    .container
+        .row
+            .col-md-12.text-center
+                h1= title
+
+        .row
+            .col-md-12.text-center
+                .row
+                    p#status Waiting
+
+        .row
+            .col-sm-6.text-center
+                button.btn.btn-danger#reset Reset
+
+            .col-sm-6.text-center
+                button.btn.btn-warning#pause Pause

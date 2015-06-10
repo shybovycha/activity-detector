@@ -93,7 +93,7 @@ class SignalProcessor {
 
         for (var axis of [ 'x', 'y', 'z' ]) {
             var T = periods[axis],
-                K = 25,
+                K = 250,
                 k = 1 / (K + 1);
 
             for (var i = K; i < N; i++) {
@@ -106,6 +106,34 @@ class SignalProcessor {
                 }
 
                 g[axis].push([ i, (k * sum) ]);
+            }
+        }
+
+        return g;
+    }
+
+    get fourierFrequencyPeaks() {
+        var f = this.accelData,
+            g = { x: [], y: [], z: [] },
+            N = f.length;
+
+        for (var axis of [ 'x', 'y', 'z' ]) {
+            for (var k = 0; k < N - 1; k++) {
+                var A_sum = 0,
+                    B_sum = 0;
+
+                for (var i = 0; i < N - 1; i++) {
+                    var n_2_pi_k_i = (2 * Math.PI * k * i) / N;
+
+                    A_sum += f[i][axis] * Math.cos(n_2_pi_k_i)
+                    B_sum += f[i][axis] * Math.sin(n_2_pi_k_i)
+                }
+
+                var Ak = (1 / N) * A_sum,
+                    Bk = (1 / N) * B_sum,
+                    Ck_modulo = Math.sqrt(Math.pow(Ak, 2) + Math.pow(Bk, 2)) / 2.0;
+
+                g[axis].push(Ck_modulo);
             }
         }
 

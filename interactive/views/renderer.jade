@@ -2,13 +2,13 @@ extends layout
 
 block head
     script(type='text/javascript', src='jquery/dist/jquery.min.js')
-    //script(type='text/javascript', src='http://192.168.2.237:8080/socket.io/socket.io.js')
     script(type='text/javascript', src='http://code.highcharts.com/stock/highstock.js')
     script(type='text/javascript', src='http://code.highcharts.com/stock/modules/exporting.js')
     script(type='text/javascript', src='renderer_client.js')
 
     link(rel='stylesheet', href='bootstrap/dist/css/bootstrap.min.css')
     link(rel='stylesheet', href='bootstrap/dist/css/bootstrap-theme.min.css')
+    link(rel="stylesheet", href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.css")
 
 block content
     .container
@@ -17,37 +17,79 @@ block content
                 h1 Interactive activity detector
 
         .row
+            .col-sm-12
+                p &nbsp;
+
+        .row
             .col-md-12.text-center
                 button.btn.btn-primary#refresh Pause
 
         .row
-            .col-md-12
-                #accel_data_chart(style="height: 400px; min-width: 310px")
+            .col-sm-12
+                p &nbsp;
 
         .row
-            .col-md-12.text-center
-                h1 Autocorrelation
+            .panel.panel-info
+                .panel-heading
+                    h2 Accelerometer data
+                    em This chart displays the data, gathered from accelerometer
+
+                .panel-body
+                    #accel_data_chart(style="height: 400px; min-width: 310px")
 
         .row
-            .col-md-4
-                #autocorrelation_x_chart(style="height: 400px; min-width: 310px")
+            .panel.panel-info
+                .panel-heading
+                    h2 Autocorrelation
+                    p!= katex.renderToString("R_{ff}(j)=\\frac{1}{N}\\sum_{i=1}^{N}{f_{i}f_{i+j}}", { displayMode: true })
+                    em Autocorrelation function allows to see if function has similar
+                    | parts, e. g. has period. Accelerometer data is not periodical
+                    | by default. But in our case, we have to detect repeated
+                    | movements. Thus, we may say that our discrete function
+                    strong &nbsp; IS &nbsp;
+                    | periodical.
+                    br/
+                    | Thus, on this chart we can observe the simmetry between halfs of the
+                    | chart along x axis as well as the detected period.
+                    | Period is detected simply with the use of gradient:
+                    p!= katex.renderToString("T=\\biggr\\|_{i=\\frac{N}{2},\\bigtriangledown f_i\\searrow}^{\\bigtriangledown f_i\\nearrow} \\max({i})", { displayMode: true })
 
-            .col-md-4
-                #autocorrelation_y_chart(style="height: 400px; min-width: 310px")
+                .panel-body
+                    .col-md-4
+                        #autocorrelation_x_chart(style="height: 400px; min-width: 310px")
 
-            .col-md-4
-                #autocorrelation_z_chart(style="height: 400px; min-width: 310px")
+                    .col-md-4
+                        #autocorrelation_y_chart(style="height: 400px; min-width: 310px")
+
+                    .col-md-4
+                        #autocorrelation_z_chart(style="height: 400px; min-width: 310px")
 
         .row
-            .col-md-12.text-center
-                h1 Filtration
+            .panel.panel-info
+                .panel-heading
+                    h2 Filtration
+
+                .panel-body
+                    .col-md-4
+                        #filtered_x_chart(style="height: 400px; min-width: 310px")
+
+                    .col-md-4
+                        #filtered_y_chart(style="height: 400px; min-width: 310px")
+
+                    .col-md-4
+                        #filtered_z_chart(style="height: 400px; min-width: 310px")
 
         .row
-            .col-md-4
-                #filtered_x_chart(style="height: 400px; min-width: 310px")
+            .panel.panel-info
+                .panel-heading
+                    h2 Fourier analysis
 
-            .col-md-4
-                #filtered_y_chart(style="height: 400px; min-width: 310px")
+                .panel-body
+                    .col-md-4
+                        #discrete_fourier_x_chart(style="height: 400px; min-width: 310px")
 
-            .col-md-4
-                #filtered_z_chart(style="height: 400px; min-width: 310px")
+                    .col-md-4
+                        #discrete_fourier_y_chart(style="height: 400px; min-width: 310px")
+
+                    .col-md-4
+                        #discrete_fourier_z_chart(style="height: 400px; min-width: 310px")

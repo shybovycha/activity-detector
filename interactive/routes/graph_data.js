@@ -35,4 +35,14 @@ router.get('/filtered', function(req, res, next) {
   });
 });
 
+router.get('/transformed', function(req, res, next) {
+  redis.llen('accel_data').then(function (len) {
+    redis.lrange('accel_data', 0, len).then(function (points) {
+        var result = new SignalProcessor(points).fourierFrequencyPeaks;
+
+        res.json(result);
+    });
+  });
+});
+
 module.exports = router;

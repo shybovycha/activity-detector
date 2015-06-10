@@ -6,6 +6,10 @@
     "Artem Shoobovych <shybovycha@gmail.com>"
   ],
   "license": "MIT",
+  "dependencies": {
+    "bootstrap": "3.3.4",
+    "jquery": "2.1.4"
+  },
   "ignore": [
     "**/.*",
     "node_modules",

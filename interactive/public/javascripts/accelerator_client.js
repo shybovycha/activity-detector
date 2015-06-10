@@ -8,6 +8,9 @@ socket.on('connect', function (data) {
 
 $(function () {
     window.ondevicemotion = function (evt) {
+        if (window.sendingPaused)
+            return;
+
         if (!window.server) {
             $('#status').html('no server connection');
             return;
@@ -42,5 +45,11 @@ $(function () {
 
         var now = new Date().getTime();
         window.accelData = { firstTimestamp: now, lastTimestamp: now };
+    });
+
+    window.sendingPaused = false;
+
+    $('#pause').on('click', function() {
+        window.sendingPaused = !window.sendingPaused;
     });
 });
