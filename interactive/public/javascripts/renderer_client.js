@@ -22,16 +22,36 @@ function fetchAndAdd() {
     });
 
     $.getJSON('/graph_data/autocorrelation', function(data) {
+        var points = data.points,
+            period = data.periods;
+
         for (var axis of [ 'x', 'y', 'z' ]) {
             var accel_data_chart = $('#autocorrelation_' + axis + '_chart').highcharts();
 
             if (!accel_data_chart)
                 return;
 
-            var centerVal = data[data.length / 2].t;
+            var centerVal = points[points.length / 2].t;
 
-            accel_data_chart.series[0].setData(data.map(function (p) { return [ p.t, p[axis] ]; }));
-            accel_data_chart.xAxis[0].addPlotLine({ color: 'red', dashStyle: 'longdashdot', width: 2, value: centerVal });
+            accel_data_chart.series[0].setData(points.map(function (p) { return [ p.t, p[axis] ]; }));
+            accel_data_chart.xAxis[0].addPlotLine({
+                color: 'red',
+                dashStyle: 'longdashdot',
+                width: 2,
+                value: centerVal,
+                label: {
+                    text: 'T=0',
+                    align: 'left'
+                }
+            });
+            accel_data_chart.xAxis[0].addPlotBand({
+                color: 'yellow',
+                from: centerVal,
+                to: centerVal + period[axis],
+                label: {
+                    text: 'Period'
+                }
+            });
         }
     });
 }
@@ -129,7 +149,7 @@ $(function () {
     initCharts();
     fetchAndAdd();
 
-    $('#refresh').on('click', function() { 
+    $('#refresh').on('click', function() {
         fetchAndAdd();
     });
 
