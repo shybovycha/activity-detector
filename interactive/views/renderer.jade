@@ -1,12 +1,29 @@
 extends layout
 
 block head
-    script(type='text/javascript', src='jquery-2.1.4.min.js')
+    script(type='text/javascript', src='jquery/dist/jquery.min.js')
     script(type='text/javascript', src='http://192.168.2.237:8080/socket.io/socket.io.js')
     script(type='text/javascript', src='http://code.highcharts.com/stock/highstock.js')
     script(type='text/javascript', src='http://code.highcharts.com/stock/modules/exporting.js')
     script(type='text/javascript', src='renderer_client.js')
 
+    link(rel='text/stylesheet', href='bootstrap/dist/bootstrap.min.css')
+    link(rel='text/stylesheet', href='bootstrap/dist/bootstrap-theme.min.css')
+
 block content
-    button#refresh Refresh
-    #accel_data_chart(style="height: 400px; min-width: 310px")
+    button.btn#refresh Refresh
+
+    .container
+        .row
+            .col-md-12
+                #accel_data_chart(style="height: 400px; min-width: 310px")
+
+        .row
+            .col-md-4
+                #autocorrelation_x_chart(style="height: 400px; min-width: 310px")
+
+            .col-md-4
+                #autocorrelation_y_chart(style="height: 400px; min-width: 310px")
+
+            .col-md-4
+                #autocorrelation_z_chart(style="height: 400px; min-width: 310px")
