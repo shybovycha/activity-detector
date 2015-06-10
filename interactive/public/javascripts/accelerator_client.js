@@ -6,38 +6,41 @@ socket.on('connect', function (data) {
     $('#status').html('connected');
 });
 
-window.ondevicemotion = function (evt) {
-    if (!window.server) {
-        $('#status').html('no server connection');
-        return;
-    }
-
-    var now = new Date().getTime();
-
-    if (!window.accelData) {
-        window.accelData = { firstTimestamp: now, lastTimestamp: now };
-    }
-
-    var dt = now - window.accelData.lastTimestamp,
-        t = now - window.accelData.firstTimestamp,
-        x = evt.accelerationIncludingGravity.x,
-        y = evt.accelerationIncludingGravity.y,
-        z = evt.accelerationIncludingGravity.z,
-        point = { t: t, x: x, y: y, z: z };
-
-    $('#status').html('&Delta;t = ' + t);
-
-    window.accelData.lastTimestamp = now;
-
-    // window.accelData.push({ lastTimestamp: now, x: x, y: y, z: z });
-    window.server.emit('newAccelData', { dataset: 'accel_data', point: point });
-};
-
 $(function () {
+    window.ondevicemotion = function (evt) {
+        if (!window.server) {
+            $('#status').html('no server connection');
+            return;
+        }
+
+        var now = new Date().getTime();
+
+        if (!window.accelData) {
+            window.accelData = { firstTimestamp: now, lastTimestamp: now };
+        }
+
+        var dt = now - window.accelData.lastTimestamp,
+            t = now - window.accelData.firstTimestamp,
+            x = evt.accelerationIncludingGravity.x,
+            y = evt.accelerationIncludingGravity.y,
+            z = evt.accelerationIncludingGravity.z,
+            point = { t: t, x: x, y: y, z: z };
+
+        $('#status').html('&Delta;t = ' + t);
+
+        window.accelData.lastTimestamp = now;
+
+        // window.accelData.push({ lastTimestamp: now, x: x, y: y, z: z });
+        window.server.emit('newAccelData', { dataset: 'accel_data', point: point });
+    };
+
     $('#reset').on('click', function() {
         if (!window.server)
             return;
 
         window.server.emit('resetAccelData', { dataset: 'accel_data' });
+
+        var now = new Date().getTime();
+        window.accelData = { firstTimestamp: now, lastTimestamp: now };
     });
 });

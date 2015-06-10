@@ -34,24 +34,73 @@ function fetchAndAdd() {
             var centerVal = points[points.length / 2].t;
 
             accel_data_chart.series[0].setData(points.map(function (p) { return [ p.t, p[axis] ]; }));
+
+            accel_data_chart.xAxis[0].removePlotLine('zero-period-line');
+
             accel_data_chart.xAxis[0].addPlotLine({
                 color: 'red',
                 dashStyle: 'longdashdot',
                 width: 2,
                 value: centerVal,
+                id: 'zero-period-line',
                 label: {
                     text: 'T=0',
                     align: 'left'
                 }
             });
+
+            accel_data_chart.xAxis[0].removePlotBand('period-band');
+
             accel_data_chart.xAxis[0].addPlotBand({
                 color: 'yellow',
                 from: centerVal,
                 to: centerVal + period[axis],
+                id: 'period-band',
                 label: {
                     text: 'Period'
                 }
             });
+        }
+    });
+
+    $.getJSON('/graph_data/filtered', function(data) {
+        var points = data;
+
+        for (var axis of [ 'x', 'y', 'z' ]) {
+            var accel_data_chart = $('#filtered_' + axis + '_chart').highcharts();
+
+            if (!accel_data_chart)
+                return;
+
+            // var centerVal = points[points.length / 2].t;
+
+            accel_data_chart.series[0].setData(points[axis]);
+
+            /*accel_data_chart.xAxis[0].removePlotLine('zero-period-line');
+
+            accel_data_chart.xAxis[0].addPlotLine({
+                color: 'red',
+                dashStyle: 'longdashdot',
+                width: 2,
+                value: centerVal,
+                id: 'zero-period-line',
+                label: {
+                    text: 'T=0',
+                    align: 'left'
+                }
+            });
+
+            accel_data_chart.xAxis[0].removePlotBand('period-band');
+
+            accel_data_chart.xAxis[0].addPlotBand({
+                color: 'yellow',
+                from: centerVal,
+                to: centerVal + period[axis],
+                id: 'period-band',
+                label: {
+                    text: 'Period'
+                }
+            });*/
         }
     });
 }
@@ -59,7 +108,8 @@ function fetchAndAdd() {
 function initCharts() {
     $('#accel_data_chart').highcharts('StockChart', {
         rangeSelector: {
-            selected: 1
+            selected: 1,
+            inputEnabled : false
         },
 
         title: {
@@ -102,11 +152,12 @@ function initCharts() {
     for (var axis of [ 'x', 'y', 'z' ]) {
         $('#autocorrelation_' + axis + '_chart').highcharts('StockChart', {
             rangeSelector: {
-                selected: 1
+                selected: 1,
+                inputEnabled : false
             },
 
             title: {
-                text: 'Acceleration (' + axis + ')'
+                text: 'Periodity (' + axis + ')'
             },
 
             exporting: {
@@ -116,6 +167,32 @@ function initCharts() {
             series: [
                 {
                     name: axis + ' periodity',
+                    data: [],
+                    type: 'spline',
+                    tooltip: {
+                        valueDecimals: 2
+                    }
+                }
+            ]
+        });
+
+        $('#filtered_' + axis + '_chart').highcharts('StockChart', {
+            rangeSelector: {
+                selected: 1,
+                inputEnabled : false
+            },
+
+            title: {
+                text: 'Filtered acceleration (' + axis + ')'
+            },
+
+            exporting: {
+                enabled: false
+            },
+
+            series: [
+                {
+                    name: axis + ' data, filtered',
                     data: [],
                     type: 'spline',
                     tooltip: {
@@ -149,9 +226,24 @@ $(function () {
     initCharts();
     fetchAndAdd();
 
+    window.refreshEnabled = true;
+
     $('#refresh').on('click', function() {
+        window.refreshEnabled = !window.refreshEnabled;
+
+        if (!window.refreshEnabled) {
+            $(this).text('Continue');
+        } else {
+            $(this).text('Pause');
+        }
+
         fetchAndAdd();
     });
 
-    //setInterval(fetchAndAdd, 2000);
+    setInterval(function() {
+        if (!window.refreshEnabled)
+            return;
+
+        fetchAndAdd();
+    }, 1000);
 });

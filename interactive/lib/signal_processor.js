@@ -1,3 +1,7 @@
+Number.prototype.mod = function(n) {
+    return ((this%n)+n)%n;
+};
+
 class SignalProcessor {
     constructor(accelData) {
         this.setAccelData(accelData);
@@ -78,6 +82,34 @@ class SignalProcessor {
         }
 
         return result;
+    }
+
+    get filteredAccelData() {
+        var autocorrelation = this.autocorrelation,
+            periods = autocorrelation.periods,
+            f = this.accelData,
+            g = { x: [], y: [], z: [] },
+            N = f.length;
+
+        for (var axis of [ 'x', 'y', 'z' ]) {
+            var T = periods[axis],
+                K = 25,
+                k = 1 / (K + 1);
+
+            for (var i = K; i < N; i++) {
+                var sum = 0;
+
+                for (var j = -K; j <= 0; j++) {
+                    var ij = (i + j); //.mod(N);
+
+                    sum += f[ij][axis];
+                }
+
+                g[axis].push([ i, (k * sum) ]);
+            }
+        }
+
+        return g;
     }
 }
 

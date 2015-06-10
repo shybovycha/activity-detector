@@ -7,16 +7,26 @@ block head
     script(type='text/javascript', src='http://code.highcharts.com/stock/modules/exporting.js')
     script(type='text/javascript', src='renderer_client.js')
 
-    link(rel='text/stylesheet', href='bootstrap/dist/bootstrap.min.css')
-    link(rel='text/stylesheet', href='bootstrap/dist/bootstrap-theme.min.css')
+    link(rel='stylesheet', href='bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='bootstrap/dist/css/bootstrap-theme.min.css')
 
 block content
-    button.btn#refresh Refresh
-
     .container
+        .row
+            .col-md-12.text-center
+                h1 Interactive activity detector
+
+        .row
+            .col-md-12.text-center
+                button.btn.btn-primary#refresh Pause
+
         .row
             .col-md-12
                 #accel_data_chart(style="height: 400px; min-width: 310px")
+
+        .row
+            .col-md-12.text-center
+                h1 Autocorrelation
 
         .row
             .col-md-4
@@ -27,3 +37,17 @@ block content
 
             .col-md-4
                 #autocorrelation_z_chart(style="height: 400px; min-width: 310px")
+
+        .row
+            .col-md-12.text-center
+                h1 Filtration
+
+        .row
+            .col-md-4
+                #filtered_x_chart(style="height: 400px; min-width: 310px")
+
+            .col-md-4
+                #filtered_y_chart(style="height: 400px; min-width: 310px")
+
+            .col-md-4
+                #filtered_z_chart(style="height: 400px; min-width: 310px")

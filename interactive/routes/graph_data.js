@@ -5,10 +5,6 @@ var SignalProcessor = require('../lib/signal_processor');
 var router = express.Router();
 var redis = new Redis();
 
-Number.prototype.mod = function(n) {
-    return ((this%n)+n)%n;
-};
-
 router.get('/accelerations', function(req, res, next) {
   redis.llen('accel_data').then(function (len) {
     redis.lrange('accel_data', 0, len).then(function (data) {
@@ -23,6 +19,16 @@ router.get('/autocorrelation', function(req, res, next) {
   redis.llen('accel_data').then(function (len) {
     redis.lrange('accel_data', 0, len).then(function (points) {
         var result = new SignalProcessor(points).autocorrelation;
+
+        res.json(result);
+    });
+  });
+});
+
+router.get('/filtered', function(req, res, next) {
+  redis.llen('accel_data').then(function (len) {
+    redis.lrange('accel_data', 0, len).then(function (points) {
+        var result = new SignalProcessor(points).filteredAccelData;
 
         res.json(result);
     });
