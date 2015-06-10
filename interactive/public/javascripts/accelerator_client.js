@@ -32,3 +32,12 @@ window.ondevicemotion = function (evt) {
     // window.accelData.push({ lastTimestamp: now, x: x, y: y, z: z });
     window.server.emit('newAccelData', { dataset: 'accel_data', point: point });
 };
+
+$(function () {
+    $('#reset').on('click', function() {
+        if (!window.server)
+            return;
+
+        window.server.emit('resetAccelData', { dataset: 'accel_data' });
+    });
+});

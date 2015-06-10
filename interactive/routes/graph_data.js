@@ -7,7 +7,7 @@ var redis = new Redis();
 router.get('/', function(req, res, next) {
   redis.llen('accel_data').then(function (len) {
     redis.lrange('accel_data', 0, len).then(function (data) {
-        var result = data.map(function(data) { return JSON.parse(data); }).reverse();
+        var result = data.map(function(data) { return JSON.parse(data); }).reverse().sort(function (a, b) { return a.t - b.t; });
 
         res.json(result);
     });

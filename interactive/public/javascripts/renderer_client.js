@@ -11,35 +11,20 @@ function addSinglePoint(point) {
 
 function fetchAndAdd() {
     $.getJSON('/graph_data', function(data) {
-        debugger;
-
         var accel_data_chart = $('#accel_data_chart').highcharts();
 
         if (!accel_data_chart)
             return;
 
-        var series1 = accel_data_chart.series[0].data.concat(data.map(function (p) { return [ p.t, p.x ]; }));
+        /*var series1 = accel_data_chart.series[0].data.concat(data.map(function (p) { return [ p.t, p.x ]; }));
         var series2 = accel_data_chart.series[1].data.concat(data.map(function (p) { return [ p.t, p.y ]; }));
-        var series3 = accel_data_chart.series[2].data.concat(data.map(function (p) { return [ p.t, p.z ]; }));
+        var series3 = accel_data_chart.series[2].data.concat(data.map(function (p) { return [ p.t, p.z ]; }));*/
 
-        debugger;
-
-        accel_data_chart.series[0].setData(series1);
-        accel_data_chart.series[1].setData(series2);
-        accel_data_chart.series[2].setData(series3);
+        accel_data_chart.series[0].setData(data.map(function (p) { return [ p.t, p.x ]; }));
+        accel_data_chart.series[1].setData(data.map(function (p) { return [ p.t, p.y ]; }));
+        accel_data_chart.series[2].setData(data.map(function (p) { return [ p.t, p.z ]; }));
     });
 }
-
-/*var socket = io.connect('http://192.168.2.237:8080');
-
-socket.on('connect', function (data) {
-    // socket.emit('join', 'Hello World from client');
-    window.server = socket;
-});
-
-socket.on('newAccelData', function (point) {
-    addSinglePoint(point);
-});*/
 
 $(function () {
     Highcharts.setOptions({
@@ -102,6 +87,8 @@ $(function () {
     });
 
     fetchAndAdd();
+
+    $('#refresh').on('click', fetchAndAdd);
 
     //setInterval(fetchAndAdd, 2000);
 });
