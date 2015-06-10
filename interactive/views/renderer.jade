@@ -1,0 +1,11 @@
+extends layout
+
+block head
+    script(type='text/javascript', src='jquery-2.1.4.min.js')
+    script(type='text/javascript', src='http://192.168.2.237:8080/socket.io/socket.io.js')
+    script(type='text/javascript', src='http://code.highcharts.com/stock/highstock.js')
+    script(type='text/javascript', src='http://code.highcharts.com/stock/modules/exporting.js')
+    script(type='text/javascript', src='renderer_client.js')
+
+block content
+    #accel_data_chart(style="height: 400px; min-width: 310px")

@@ -1,12 +1,12 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
+// var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+// var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var Redis = require('ioredis');
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
+var redis = new Redis();
 
 var app = express();
 
@@ -19,11 +19,17 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+//app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public/javascripts')));
 
-app.use('/', routes);
-app.use('/users', users);
+var renderer = require('./routes/renderer');
+var accelerator = require('./routes/accelerator');
+var graphData = require('./routes/graph_data');
+
+app.use('/', renderer);
+app.use('/accel', accelerator);
+app.use('/graph_data', graphData);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -56,5 +62,25 @@ app.use(function(err, req, res, next) {
   });
 });
 
+var io = require('socket.io').listen(8080);
+
+io.set('log level', 1);
+
+// Навешиваем обработчик на подключение нового клиента
+io.sockets.on('connection', function (socket) {
+  console.log('CONNECTED:', socket.id);
+
+  socket.on('newAccelData', function (params) {
+    // socket.broadcast.emit('newAccelData', point);
+    redis.lpush(params.dataset, JSON.stringify(params.point));
+  });
+
+  socket.on('resetAccelData', function (params) {
+    redis.del(params.dataset);
+  });
+
+  socket.on('disconnect', function() {
+  });
+});
 
 module.exports = app;
