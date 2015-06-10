@@ -32,7 +32,7 @@ block content
             .panel.panel-info
                 .panel-heading
                     h2 Accelerometer data
-                    em This chart displays the data, gathered from accelerometer
+                    p This chart displays the data, gathered from accelerometer
 
                 .panel-body
                     #accel_data_chart(style="height: 400px; min-width: 310px")
@@ -42,17 +42,17 @@ block content
                 .panel-heading
                     h2 Autocorrelation
                     p!= katex.renderToString("R_{ff}(j)=\\frac{1}{N}\\sum_{i=1}^{N}{f_{i}f_{i+j}}", { displayMode: true })
-                    em Autocorrelation function allows to see if function has similar
-                    | parts, e. g. has period. Accelerometer data is not periodical
-                    | by default. But in our case, we have to detect repeated
-                    | movements. Thus, we may say that our discrete function
-                    strong &nbsp; IS &nbsp;
-                    | periodical.
-                    br/
-                    | Thus, on this chart we can observe the simmetry between halfs of the
-                    | chart along x axis as well as the detected period.
-                    | Period is detected simply with the use of gradient:
-                    p!= katex.renderToString("T=\\biggr\\|_{i=\\frac{N}{2},\\bigtriangledown f_i\\searrow}^{\\bigtriangledown f_i\\nearrow} \\max({i})", { displayMode: true })
+                    p Autocorrelation function allows to see if function has similar
+                        | parts, e. g. has period. Accelerometer data is not periodical
+                        | by default. But in our case, we have to detect repeated
+                        | movements. Thus, we may say that our discrete function
+                        strong &nbsp; IS &nbsp;
+                        | periodical.
+                        br/
+                        | Thus, on this chart we can observe the simmetry between halfs of the
+                        | chart along x axis as well as the detected period.
+                        | Period is detected simply with the use of gradient:
+                        p!= katex.renderToString("T=\\biggr\\|_{i=\\frac{N}{2},\\bigtriangledown f_i\\searrow}^{\\bigtriangledown f_i\\nearrow} \\max({i})", { displayMode: true })
 
                 .panel-body
                     .col-md-4
@@ -68,6 +68,22 @@ block content
             .panel.panel-info
                 .panel-heading
                     h2 Filtration
+                    p!= katex.renderToString("g_i=\\frac{1}{T+1}\\sum_{j=-T}^{0}{f_{i+j}}", { displayMode: true })
+                    p This simple filter minimalizes the noise, which is
+                        | caused by some trashy data over periodical signal.
+                        | That is, signal' values, if they are repeated,
+                        | will be limited by some precise value, and noise values
+                        | will be removed when calculating an average value of
+                        | function values on the same positions because of the noise
+                        | inconsistency. On endless dataset, average value of noise
+                        | will come to zero because of its randomility.
+                        br/
+                        | Experimentally calculated that having &nbsp;
+                        span!= katex.renderToString("T=25")
+                        | &nbsp; on this large dataset is enough to create more
+                        | or less readable function chart.
+                        | If its value will be too high, chart will transform into a straight line.
+                        | If its value will be too low, chart will contain too much noise.
 
                 .panel-body
                     .col-md-4
@@ -83,6 +99,25 @@ block content
             .panel.panel-info
                 .panel-heading
                     h2 Fourier analysis
+                    p Fourier's transform of the function allows one to see all the
+                        | spectrum of frequencies and amplitudes of a signal components.
+                        | In this particular case, only &nbsp;
+                        strong discrete Fourier transform
+                        | &nbsp; may be calculated as long as the input data is a discrete
+                        | function.
+                        br/
+                        | Discrete Fourier transform provides us with a set of complex
+                        | numbers, which may be re-written in a real number space
+                        | by using trigonometric functions.
+                        p!= katex.renderToString("C_k=A_k+iB_k", { displayMode: true })
+                        p!= katex.renderToString("A_k=\\frac{1}{N}\\sum_{i=0}^{N}{f_i\\cos(\\frac{2\\pi}{N})ki}\\;, k=0,1,..,N-1", { displayMode: true })
+                        p!= katex.renderToString("B_k=-\\frac{1}{N}\\sum_{i=0}^{N}{f_i\\sin(\\frac{2\\pi}{N})ki}\\;, k=0,1,..,N-1", { displayMode: true })
+                        | A set of Fourier coefficients' modulos express amplitudes. It does not depend on
+                        | function's offset along x-axis. Thus it is more useful than correlation
+                        | between template function and the analysed one.
+                        | The first Fourier coefficient, &nbsp;
+                        span!= katex.renderToString("C_0")
+                        | &nbsp;, is a function's average value and may be used to detect the movement.
 
                 .panel-body
                     .col-md-4

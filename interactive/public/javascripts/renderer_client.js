@@ -42,11 +42,7 @@ function fetchAndAdd() {
                 dashStyle: 'longdashdot',
                 width: 2,
                 value: centerVal,
-                id: 'zero-period-line',
-                label: {
-                    text: 'T=0',
-                    align: 'left'
-                }
+                id: 'zero-period-line'
             });
 
             accel_data_chart.xAxis[0].removePlotBand('period-band');
@@ -57,7 +53,7 @@ function fetchAndAdd() {
                 to: centerVal + period[axis],
                 id: 'period-band',
                 label: {
-                    text: 'Period'
+                    text: 'T=' + period[axis]
                 }
             });
         }

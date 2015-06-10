@@ -93,14 +93,14 @@ class SignalProcessor {
 
         for (var axis of [ 'x', 'y', 'z' ]) {
             var T = periods[axis],
-                K = 250,
+                K = 25,
                 k = 1 / (K + 1);
 
             for (var i = K; i < N; i++) {
                 var sum = 0;
 
                 for (var j = -K; j <= 0; j++) {
-                    var ij = (i + j); //.mod(N);
+                    var ij = (i + j);
 
                     sum += f[ij][axis];
                 }
