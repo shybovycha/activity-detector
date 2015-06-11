@@ -2,13 +2,13 @@ extends layout
 
 block head
     script(type='text/javascript', src='jquery/dist/jquery.min.js')
-    script(type='text/javascript', src='http://code.highcharts.com/stock/highstock.js')
-    script(type='text/javascript', src='http://code.highcharts.com/stock/modules/exporting.js')
+    script(type='text/javascript', src='highstock.js')
+    script(type='text/javascript', src='exporting.js')
     script(type='text/javascript', src='renderer_client.js')
 
     link(rel='stylesheet', href='bootstrap/dist/css/bootstrap.min.css')
     link(rel='stylesheet', href='bootstrap/dist/css/bootstrap-theme.min.css')
-    link(rel="stylesheet", href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.3.0/katex.min.css")
+    link(rel="stylesheet", href="katex-build/katex.min.css")
 
 block content
     .container
@@ -21,8 +21,16 @@ block content
                 p &nbsp;
 
         .row
+            .col-sm-12.text-center
+                span#dataset(style="display:none;", data-name=dataset)
+                ul.nav.nav-pills
+                    - for (chart of ['laying', 'sitting', 'staying', 'walking', 'jumping', 'running', 'pompki', 'brzuszki', 'przysiady'])
+                        li(role="presentation", class="{chart == dataset ? 'active' : ''")
+                            a(href=`/?dataset=${chart}`)= chart
+
+        .row
             .col-md-12.text-center
-                button.btn.btn-primary#refresh Pause
+                button.btn.btn-primary#refresh Start
 
         .row
             .col-sm-12

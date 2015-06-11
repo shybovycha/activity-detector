@@ -126,33 +126,11 @@ class SignalProcessor {
 
     get filteredAccelData() {
         return SignalProcessor.filterData(this.accelData)
-        /*var autocorrelation = this.autocorrelation,
-            periods = autocorrelation.periods,
-            f = this.accelData,
-            g = { x: [], y: [], z: [] },
-            N = f.length;
+    }
 
-        for (var axis of [ 'x', 'y', 'z' ]) {
-            var T = periods[axis],
-                K = 50,
-                k = 1 / (K + 1);
-
-            for (var i = K / 2; i < N - (K / 2); i++) {
-                var sum = 0;
-
-                i = parseInt(i)
-
-                for (var j = -K / 2; j <= K / 2; j++) {
-                    var ij = (i + j);
-
-                    sum += f[ij][axis];
-                }
-
-                g[axis].push([ i, (k * sum) ]);
-            }
-        }
-
-        return g;*/
+    get isFunctionMonotonic(f, T) {
+        // return (1..N / T).map(function(i) { return (f(i*T + T/2) - f(i*T)) / (f((i+1)*T) - f((i+1)*T + T/2)); }).all(function(e) { return e < 0; });
+        return false;
     }
 
     get fourierFrequencyPeaks() {

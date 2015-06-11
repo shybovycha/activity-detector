@@ -10,7 +10,9 @@ function addSinglePoint(point) {
 }
 
 function fetchAndAdd() {
-    $.getJSON('/graph_data/accelerations', function(data) {
+    var dataset = $('#dataset').attr('data-name');
+
+    $.getJSON('/graph_data/accelerations?dataset=' + dataset, function(data) {
         var accel_data_chart = $('#accel_data_chart').highcharts();
 
         if (!accel_data_chart)
@@ -21,7 +23,7 @@ function fetchAndAdd() {
         accel_data_chart.series[2].setData(data.map(function (p) { return [ p.t, p.z ]; }));
     });
 
-    $.getJSON('/graph_data/autocorrelation', function(data) {
+    $.getJSON('/graph_data/autocorrelation?dataset=' + dataset, function(data) {
         var points = data.points,
             period = data.periods;
 
@@ -58,7 +60,7 @@ function fetchAndAdd() {
         }
     });
 
-    $.getJSON('/graph_data/filtered_autocorrelation', function(data) {
+    $.getJSON('/graph_data/filtered_autocorrelation?dataset=' + dataset, function(data) {
         var points = data.points,
             period = data.periods;
 
@@ -98,7 +100,7 @@ function fetchAndAdd() {
         }
     });
 
-    $.getJSON('/graph_data/filtered', function (data) {
+    $.getJSON('/graph_data/filtered?dataset=' + dataset, function (data) {
         var points = data;
 
         for (var axis of [ 'x', 'y', 'z' ]) {
@@ -111,7 +113,7 @@ function fetchAndAdd() {
         }
     });
 
-    $.getJSON('/graph_data/transformed', function (data) {
+    $.getJSON('/graph_data/transformed?dataset=' + dataset, function (data) {
         var peaks = data;
 
         for (var axis of [ 'x', 'y', 'z' ]) {
@@ -354,7 +356,7 @@ $(function () {
     initCharts();
     fetchAndAdd();
 
-    window.refreshEnabled = true;
+    window.refreshEnabled = false;
 
     $('#refresh').on('click', function() {
         window.refreshEnabled = !window.refreshEnabled;

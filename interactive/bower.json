@@ -8,7 +8,10 @@
   "license": "MIT",
   "dependencies": {
     "bootstrap": "3.3.4",
-    "jquery": "2.1.4"
+    "jquery": "2.1.4",
+    "katex-build": "~0.3.0",
+    "highcharts": "~4.1.5",
+    "highstock": "~3.0.1"
   },
   "ignore": [
     "**/.*",

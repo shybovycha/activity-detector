@@ -3,7 +3,9 @@ var katex = require('katex');
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
-  res.render('renderer', { katex: katex, title: 'Renderer' });
+    var dataset = req.query.dataset || 'laying';
+
+    res.render('renderer', { katex: katex, dataset: dataset, title: 'Renderer' });
 });
 
 module.exports = router;
