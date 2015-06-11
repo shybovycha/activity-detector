@@ -93,13 +93,15 @@ class SignalProcessor {
 
         for (var axis of [ 'x', 'y', 'z' ]) {
             var T = periods[axis],
-                K = 25,
+                K = 50,
                 k = 1 / (K + 1);
 
-            for (var i = K; i < N; i++) {
+            for (var i = K / 2; i < N - (K / 2); i++) {
                 var sum = 0;
 
-                for (var j = -K; j <= 0; j++) {
+                i = parseInt(i)
+
+                for (var j = -K / 2; j <= K / 2; j++) {
                     var ij = (i + j);
 
                     sum += f[ij][axis];
@@ -113,11 +115,13 @@ class SignalProcessor {
     }
 
     get fourierFrequencyPeaks() {
-        var f = this.accelData,
-            g = { x: [], y: [], z: [] },
-            N = f.length;
+        var f = this.filteredAccelData,
+            g = { x: [], y: [], z: [] };
+            //N = f.length;
 
         for (var axis of [ 'x', 'y', 'z' ]) {
+            var N = f[axis].length;
+
             for (var k = 0; k < N - 1; k++) {
                 var A_sum = 0,
                     B_sum = 0;
@@ -125,8 +129,11 @@ class SignalProcessor {
                 for (var i = 0; i < N - 1; i++) {
                     var n_2_pi_k_i = (2 * Math.PI * k * i) / N;
 
-                    A_sum += f[i][axis] * Math.cos(n_2_pi_k_i)
-                    B_sum += f[i][axis] * Math.sin(n_2_pi_k_i)
+                    // A_sum += f[i][axis] * Math.cos(n_2_pi_k_i);
+                    // B_sum += f[i][axis] * Math.sin(n_2_pi_k_i);
+
+                    A_sum += f[axis][i][1] * Math.cos(n_2_pi_k_i);
+                    B_sum += f[axis][i][1] * Math.sin(n_2_pi_k_i);
                 }
 
                 var Ak = (1 / N) * A_sum,
