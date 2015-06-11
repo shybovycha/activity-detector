@@ -25,6 +25,18 @@ router.get('/autocorrelation', function(req, res, next) {
   });
 });
 
+router.get('/filtered_autocorrelation', function(req, res, next) {
+  redis.llen('accel_data').then(function (len) {
+    redis.lrange('accel_data', 0, len).then(function (points) {
+        var autocorr = new SignalProcessor(points).autocorrelation,
+            points = SignalProcessor.filterData(autocorr.points, 150),
+            result = { points: points, periods: autocorr.periods };
+
+        res.json(result);
+    });
+  });
+});
+
 router.get('/filtered', function(req, res, next) {
   redis.llen('accel_data').then(function (len) {
     redis.lrange('accel_data', 0, len).then(function (points) {

@@ -84,8 +84,49 @@ class SignalProcessor {
         return result;
     }
 
+    static reverseCoords(f) {
+        var result = { x: [], y: [], z: [] };
+
+        f.forEach(function (e) {
+            result.x.push(e.x);
+            result.y.push(e.y);
+            result.z.push(e.z);
+        });
+
+        return result;
+    }
+
+    static filterData(f, K) {
+        if (!K)
+            K = 50;
+
+        var g = { x: [], y: [], z: [] },
+            N = f.length;
+
+        for (var axis of [ 'x', 'y', 'z' ]) {
+            var k = 1 / (K + 1);
+
+            for (var i = K; i < N; i++) {
+                var sum = 0;
+
+                i = parseInt(i)
+
+                for (var j = -K; j <= 0; j++) {
+                    var ij = (i + j).mod(N);
+
+                    sum += f[ij][axis];
+                }
+
+                g[axis].push([ i, (k * sum) ]);
+            }
+        }
+
+        return g;
+    }
+
     get filteredAccelData() {
-        var autocorrelation = this.autocorrelation,
+        return SignalProcessor.filterData(this.accelData)
+        /*var autocorrelation = this.autocorrelation,
             periods = autocorrelation.periods,
             f = this.accelData,
             g = { x: [], y: [], z: [] },
@@ -111,7 +152,7 @@ class SignalProcessor {
             }
         }
 
-        return g;
+        return g;*/
     }
 
     get fourierFrequencyPeaks() {

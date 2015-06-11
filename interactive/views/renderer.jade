@@ -55,14 +55,25 @@ block content
                         p!= katex.renderToString("T=\\biggr\\|_{i=\\frac{N}{2},\\bigtriangledown f_i\\searrow}^{\\bigtriangledown f_i\\nearrow} \\max({i})", { displayMode: true })
 
                 .panel-body
-                    .col-md-4
-                        #autocorrelation_x_chart(style="height: 400px; min-width: 310px")
+                    .row
+                        .col-md-4
+                            #autocorrelation_x_chart(style="height: 400px; min-width: 310px")
 
-                    .col-md-4
-                        #autocorrelation_y_chart(style="height: 400px; min-width: 310px")
+                        .col-md-4
+                            #autocorrelation_y_chart(style="height: 400px; min-width: 310px")
 
-                    .col-md-4
-                        #autocorrelation_z_chart(style="height: 400px; min-width: 310px")
+                        .col-md-4
+                            #autocorrelation_z_chart(style="height: 400px; min-width: 310px")
+
+                    .row
+                        .col-md-4
+                            #filtered_autocorrelation_x_chart(style="height: 400px; min-width: 310px")
+
+                        .col-md-4
+                            #filtered_autocorrelation_y_chart(style="height: 400px; min-width: 310px")
+
+                        .col-md-4
+                            #filtered_autocorrelation_z_chart(style="height: 400px; min-width: 310px")
 
         .row
             .panel.panel-info

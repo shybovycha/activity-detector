@@ -32,8 +32,47 @@ function fetchAndAdd() {
                 return;
 
             var centerVal = points[points.length / 2].t;
-
             accel_data_chart.series[0].setData(points.map(function (p) { return [ p.t, p[axis] ]; }));
+
+            accel_data_chart.xAxis[0].removePlotLine('zero-period-line');
+
+            accel_data_chart.xAxis[0].addPlotLine({
+                color: 'red',
+                dashStyle: 'longdashdot',
+                width: 2,
+                value: centerVal,
+                id: 'zero-period-line'
+            });
+
+            accel_data_chart.xAxis[0].removePlotBand('period-band');
+
+            accel_data_chart.xAxis[0].addPlotBand({
+                color: 'yellow',
+                from: centerVal,
+                to: centerVal + period[axis],
+                id: 'period-band',
+                label: {
+                    text: 'T=' + period[axis]
+                }
+            });
+        }
+    });
+
+    $.getJSON('/graph_data/filtered_autocorrelation', function(data) {
+        var points = data.points,
+            period = data.periods;
+
+        for (var axis of [ 'x', 'y', 'z' ]) {
+            var accel_data_chart = $('#filtered_autocorrelation_' + axis + '_chart').highcharts();
+
+            if (!accel_data_chart)
+                return;
+
+            //var centerVal = points[points.length / 2].t;
+            // accel_data_chart.series[0].setData(points.map(function (p) { return [ p.t, p[axis] ]; }));
+
+            var centerVal = points[axis][parseInt(points[axis].length / 2)][0];
+            accel_data_chart.series[0].setData(points[axis]);
 
             accel_data_chart.xAxis[0].removePlotLine('zero-period-line');
 
@@ -183,6 +222,46 @@ function initCharts() {
             ]
         });
 
+        $('#filtered_autocorrelation_' + axis + '_chart').highcharts('StockChart', {
+            rangeSelector: {
+                selected: 1,
+                inputEnabled : false
+            },
+
+            title: {
+                text: 'Periodity (' + axis + ')'
+            },
+
+            xAxis: {
+                labels: {
+                    formatter: function () {
+                        return this.value + 'ms';
+                    }
+                }
+            },
+
+            tooltip: {
+                headerFormat: '',
+                pointFormat: '{point.x} ms = {point.y}'
+            },
+
+            exporting: {
+                enabled: false
+            },
+
+            series: [
+                {
+                    name: axis + ' periodity',
+                    data: [],
+                    type: 'spline',
+                    tooltip: {
+                        valueDecimals: 2
+                    }
+                }
+            ]
+        });
+
+
         // filtration
         $('#filtered_' + axis + '_chart').highcharts('StockChart', {
             rangeSelector: {
@@ -237,14 +316,14 @@ function initCharts() {
             xAxis: {
                 labels: {
                     formatter: function () {
-                        return this.value + 'ms';
+                        return this.value;
                     }
                 }
             },
 
             tooltip: {
                 headerFormat: '',
-                pointFormat: '{point.x} Hz = {point.y}'
+                pointFormat: 'F({point.x}) = {point.y} Hz'
             },
 
             exporting: {
