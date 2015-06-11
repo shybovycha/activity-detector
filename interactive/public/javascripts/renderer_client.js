@@ -190,7 +190,7 @@ function initCharts() {
             },
 
             title: {
-                text: 'Periodity (' + axis + ')'
+                text: 'Autocorrelation (' + axis + ')'
             },
 
             xAxis: {
@@ -229,7 +229,7 @@ function initCharts() {
             },
 
             title: {
-                text: 'Periodity (' + axis + ')'
+                text: 'Filtered autocorrelation (' + axis + ')'
             },
 
             xAxis: {
