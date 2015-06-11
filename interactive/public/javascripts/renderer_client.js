@@ -101,6 +101,19 @@ function initCharts() {
             enabled: false
         },
 
+        xAxis: {
+            labels: {
+                formatter: function () {
+                    return this.value + 'ms';
+                }
+            }
+        },
+
+        tooltip: {
+            headerFormat: '',
+            pointFormat: '{point.x} ms = {point.y}'
+        },
+
         series: [
             {
                 name: 'x',
@@ -141,6 +154,19 @@ function initCharts() {
                 text: 'Periodity (' + axis + ')'
             },
 
+            xAxis: {
+                labels: {
+                    formatter: function () {
+                        return this.value + 'ms';
+                    }
+                }
+            },
+
+            tooltip: {
+                headerFormat: '',
+                pointFormat: '{point.x} ms = {point.y}'
+            },
+
             exporting: {
                 enabled: false
             },
@@ -168,6 +194,19 @@ function initCharts() {
                 text: 'Filtered (' + axis + ')'
             },
 
+            xAxis: {
+                labels: {
+                    formatter: function () {
+                        return this.value + 'ms';
+                    }
+                }
+            },
+
+            tooltip: {
+                headerFormat: '',
+                pointFormat: '{point.x} ms = {point.y}'
+            },
+
             exporting: {
                 enabled: false
             },
@@ -193,6 +232,19 @@ function initCharts() {
 
             title: {
                 text: 'Peak frequencies (' + axis + ')'
+            },
+
+            xAxis: {
+                labels: {
+                    formatter: function () {
+                        return this.value + 'ms';
+                    }
+                }
+            },
+
+            tooltip: {
+                headerFormat: '',
+                pointFormat: '{point.x} Hz = {point.y}'
             },
 
             exporting: {
