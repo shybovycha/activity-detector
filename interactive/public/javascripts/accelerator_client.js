@@ -1,4 +1,5 @@
-var socket = io.connect('http://192.168.2.237:8080');
+//var socket = io.connect('http://192.168.2.237:8080');
+var socket = io.connect('http://10.94.2.150:8080');
 
 socket.on('connect', function (data) {
     // socket.emit('join', 'Hello World from client');
@@ -34,14 +35,14 @@ $(function () {
         window.accelData.lastTimestamp = now;
 
         // window.accelData.push({ lastTimestamp: now, x: x, y: y, z: z });
-        window.server.emit('newAccelData', { dataset: 'accel_data', point: point });
+        window.server.emit('newAccelData', { dataset: 'accel_data_live', point: point });
     };
 
     $('#reset').on('click', function() {
         if (!window.server)
             return;
 
-        window.server.emit('resetAccelData', { dataset: 'accel_data' });
+        window.server.emit('resetAccelData', { dataset: 'accel_data_live' });
 
         var now = new Date().getTime();
         window.accelData = { firstTimestamp: now, lastTimestamp: now };

@@ -24,7 +24,7 @@ block content
             .col-sm-12.text-center
                 span#dataset(style="display:none;", data-name=dataset)
                 ul.nav.nav-pills
-                    - for (chart of ['laying', 'sitting', 'staying', 'walking', 'jumping', 'running', 'pompki', 'brzuszki', 'przysiady'])
+                    - for (chart of ['laying', 'sitting', 'staying', 'walking', 'jumping', 'running', 'pompki', 'brzuszki', 'przysiady', 'live'])
                         li(role="presentation", class="{chart == dataset ? 'active' : ''")
                             a(href=`/?dataset=${chart}`)= chart
 

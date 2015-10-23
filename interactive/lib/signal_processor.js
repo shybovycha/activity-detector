@@ -1,3 +1,5 @@
+"use strict"
+
 Number.prototype.mod = function(n) {
     return ((this%n)+n)%n;
 };
@@ -128,7 +130,7 @@ class SignalProcessor {
         return SignalProcessor.filterData(this.accelData)
     }
 
-    get isFunctionMonotonic(f, T) {
+    get_isFunctionMonotonic(f, T) {
         // return (1..N / T).map(function(i) { return (f(i*T + T/2) - f(i*T)) / (f((i+1)*T) - f((i+1)*T + T/2)); }).all(function(e) { return e < 0; });
         return false;
     }

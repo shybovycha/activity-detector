@@ -65,9 +65,9 @@ app.use(function(err, req, res, next) {
 
 var io = require('socket.io').listen(8080);
 
-io.set('log level', 1);
+//io.set('log level', 1);
 
-// Навешиваем обработчик на подключение нового клиента
+// New connection handler
 io.sockets.on('connection', function (socket) {
   console.log('CONNECTED:', socket.id);
 
