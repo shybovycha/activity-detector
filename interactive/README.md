@@ -23,20 +23,17 @@ Or with the newer versions of Node:
 
     node bin/www
 
-Now, a bit of configuration: find out your local network IP and paste in these two files:
+Now, a bit of configuration - find out your local network IP and paste in `routes/accelerator.js`:
 
-**public/javascripts/accelerator_client.js**:
-
-    var socket = io.connect('http://YOUR_IP:8080');
-
-**views/accelerator.jade**:
-
-    script(type='text/javascript', src='http://YOUR_IP:8080/socket.io/socket.io.js')
+    var socket_params = {
+        ip: 'YOUR_IP_HERE',
+        port: '8080'
+    };
 
 And open two pages:
 
-1. [YOUR_IP:3000](http://localhost:3000/) on the **desktop**
-2. [YOUR_IP:3000/accel](http://localhost:3000/accel) on your **mobile phone**
+1. [YOUR_IP:3000](http://YOUR_IP:3000/) on the **desktop**
+2. [YOUR_IP:3000/accel](http://YOUR_IP:3000/accel) on your **mobile phone**
 
 The system will start gathering the data. To refresh the charts on the desktop, click the **Refresh** button. To reset the data gathered, click the **Reset** button on your cellphone.
 

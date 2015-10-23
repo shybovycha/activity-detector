@@ -1,5 +1,5 @@
 //var socket = io.connect('http://192.168.2.237:8080');
-var socket = io.connect('http://10.94.2.150:8080');
+var socket = io.connect(window.socket_ip + ':' + window.socket_port);
 
 socket.on('connect', function (data) {
     // socket.emit('join', 'Hello World from client');

@@ -2,8 +2,12 @@ extends layout
 
 block head
     script(type='text/javascript', src='jquery/dist/jquery.min.js')
-    //script(type='text/javascript', src='http://192.168.2.237:8080/socket.io/socket.io.js')
-    script(type='text/javascript', src='http://10.94.2.150:8080/socket.io/socket.io.js')
+    script(type='text/javascript', src='http://#{ socket_ip }:#{ socket_port }/socket.io/socket.io.js')
+    
+    script
+        window.socket_ip = '#{ socket_ip }';
+        window.socket_port = '#{ socket_port }';
+        
     script(type='text/javascript', src='accelerator_client.js')
 
     link(rel='stylesheet', href='bootstrap/dist/css/bootstrap.min.css')
