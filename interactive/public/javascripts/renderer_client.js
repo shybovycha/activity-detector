@@ -33,9 +33,11 @@ function fetchAndAdd() {
             if (!accel_data_chart)
                 return;
 
-            var centerVal = points[points.length / 2].t;
-            accel_data_chart.series[0].setData(points.map(function (p) { return [ p.t, p[axis] ]; }));
+            var centerVal = points[points.length / 2].t,
+                deltaTime = points[1].t - points[0].t;
 
+            accel_data_chart.series[0].setData(points.map(function (p) { return [ p.t * deltaTime, p[axis] ]; }));
+            
             accel_data_chart.xAxis[0].removePlotLine('zero-period-line');
 
             accel_data_chart.xAxis[0].addPlotLine({
@@ -103,7 +105,7 @@ function fetchAndAdd() {
     $.getJSON('/graph_data/filtered?dataset=' + dataset, function (data) {
         var points = data;
 
-        for (var axis of [ 'x', 'y', 'z' ]) {
+        for (var axis of [ 'x', 'y', 'z', 'a' ]) {
             var accel_data_chart = $('#filtered_' + axis + '_chart').highcharts();
 
             if (!accel_data_chart)
@@ -152,7 +154,7 @@ function initCharts() {
 
         tooltip: {
             headerFormat: '',
-            pointFormat: '{point.x} ms = {point.y}'
+            pointFormat: '(t = {point.x}) {series.name}: {point.y};'
         },
 
         series: [
@@ -205,7 +207,7 @@ function initCharts() {
 
             tooltip: {
                 headerFormat: '',
-                pointFormat: '{point.x} ms = {point.y}'
+                pointFormat: 'delta {point.x} ms: ' + '{point.y};'
             },
 
             exporting: {
@@ -262,7 +264,6 @@ function initCharts() {
                 }
             ]
         });
-
 
         // filtration
         $('#filtered_' + axis + '_chart').highcharts('StockChart', {
@@ -344,6 +345,45 @@ function initCharts() {
             ]
         });
     }
+    
+    $('#filtered_a_chart').highcharts('StockChart', {
+            rangeSelector: {
+                selected: 1,
+                inputEnabled : false
+            },
+
+            title: {
+                text: 'Filtered (a)'
+            },
+
+            xAxis: {
+                labels: {
+                    formatter: function () {
+                        return this.value + 'ms';
+                    }
+                }
+            },
+
+            tooltip: {
+                headerFormat: '',
+                pointFormat: '{point.x} ms = {point.y}'
+            },
+
+            exporting: {
+                enabled: false
+            },
+
+            series: [
+                {
+                    name: 'a data, filtered',
+                    data: [],
+                    type: 'spline',
+                    tooltip: {
+                        valueDecimals: 2
+                    }
+                }
+            ]
+        });
 }
 
 $(function () {

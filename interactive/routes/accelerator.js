@@ -3,7 +3,7 @@ var router = express.Router();
 
 router.get('/', function(req, res, next) {
   var socket_params = {
-    ip: '10.94.2.150',
+    ip: '10.10.97.87',
     port: '8080'
   };
   

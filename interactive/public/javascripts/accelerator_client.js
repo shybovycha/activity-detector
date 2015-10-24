@@ -1,4 +1,3 @@
-//var socket = io.connect('http://192.168.2.237:8080');
 var socket = io.connect(window.socket_ip + ':' + window.socket_port);
 
 socket.on('connect', function (data) {
